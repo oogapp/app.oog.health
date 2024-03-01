@@ -1,0 +1,10 @@
+overwrite: true
+#schema: "https://graph.dyme.com/graphql"
+schema: "http://localhost:8081/graphql"
+documents:
+  - "src/**/*.ts"
+generates:
+  src/gql/:
+    preset: "client"
+    config:
+      documentMode: "string"
