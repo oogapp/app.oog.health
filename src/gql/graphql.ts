@@ -16171,6 +16171,26 @@ export type SendOtpMutationVariables = Exact<{
 
 export type SendOtpMutation = { __typename?: 'Mutation', sendPhoneOTP: boolean };
 
+export type VerifyOtpMutationVariables = Exact<{
+  phone: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
+}>;
+
+
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyPhoneOTP: { __typename?: 'PhoneVerificationResponse', token: string } };
+
+export type LoginWithOtpMutationVariables = Exact<{
+  token: Scalars['String']['input'];
+}>;
+
+
+export type LoginWithOtpMutation = { __typename?: 'Mutation', login: { __typename?: 'LoginResponse', token: string, user: { __typename?: 'User', tenants?: Array<{ __typename?: 'Tenant', id: string, name: string, default: boolean }> | null } } };
+
+export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentUserQuery = { __typename?: 'Query', currentUser: { __typename?: 'User', id: string, email?: string | null, firstName?: string | null, lastName?: string | null, role: UserRole, limitedRoles?: Array<string> | null, tenants?: Array<{ __typename?: 'Tenant', id: string, name: string, default: boolean }> | null, avatar?: { __typename?: 'MediaItem', url: string, publicID: string } | null } };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -16191,3 +16211,45 @@ export const SendOtpDocument = new TypedDocumentString(`
   sendPhoneOTP(phone: $phone)
 }
     `) as unknown as TypedDocumentString<SendOtpMutation, SendOtpMutationVariables>;
+export const VerifyOtpDocument = new TypedDocumentString(`
+    mutation VerifyOTP($phone: String!, $otp: String!) {
+  verifyPhoneOTP(phone: $phone, otp: $otp) {
+    token
+  }
+}
+    `) as unknown as TypedDocumentString<VerifyOtpMutation, VerifyOtpMutationVariables>;
+export const LoginWithOtpDocument = new TypedDocumentString(`
+    mutation LoginWithOTP($token: String!) {
+  login(phoneVerificationToken: $token) {
+    token
+    user {
+      tenants {
+        id
+        name
+        default
+      }
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<LoginWithOtpMutation, LoginWithOtpMutationVariables>;
+export const CurrentUserDocument = new TypedDocumentString(`
+    query CurrentUser {
+  currentUser {
+    id
+    email
+    firstName
+    lastName
+    role
+    limitedRoles
+    tenants {
+      id
+      name
+      default
+    }
+    avatar {
+      url
+      publicID
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<CurrentUserQuery, CurrentUserQueryVariables>;

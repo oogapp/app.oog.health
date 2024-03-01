@@ -1,5 +1,5 @@
 import TestComponent from "@/components/TestComponent";
-import { getTopics } from "../actions";
+import { getTopics } from "../auth-actions";
 
 export default async function TestPage() {
 
