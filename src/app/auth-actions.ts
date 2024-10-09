@@ -58,7 +58,7 @@ const CurrentUser = graphql(`
     }
 `)
 
-const client = new GraphQLClient('http://localhost:8081/graphql')
+const client = new GraphQLClient(process.env.NEXT_PUBLIC_OOG_API_ENDPOINT!)
 
 export async function sendPhoneOTP(prevState:any,data: FormData): Promise<any> {
     let result = loginFormSchema.safeParse({

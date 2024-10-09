@@ -8,7 +8,7 @@ export default function VerifyForm({ phone }) {
     const [state, formAction] = useFormState(verifyPhoneOTP, {})
     return (
         <div className="space-y-4">
-            <div>Verify the code we sent to your phone: {phone}</div>
+            <div className="font-medium text-center">Verify the code we sent to your phone: {phone}</div>
             <div>
                 <form action={formAction} className="space-y-4">
 
