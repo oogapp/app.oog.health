@@ -1,6 +1,7 @@
 'use client'
 import { verifyPhoneOTP } from "@/app/auth-actions"
 import { useFormState } from "react-dom"
+import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Submit } from "./ui/submit"
 
@@ -8,9 +9,8 @@ export default function VerifyForm({ phone }) {
     const [state, formAction] = useFormState(verifyPhoneOTP, {})
     return (
         <div className="space-y-4">
-            <div className="font-medium text-center">Verify the code we sent to your phone: {phone}</div>
             <div>
-                <form action={formAction} className="space-y-4">
+                <form action={formAction} className="space-y-2">
 
                     {state.success && <div className="text-green-600">Verification code sent</div>}
 
@@ -23,10 +23,12 @@ export default function VerifyForm({ phone }) {
 
                     <Submit
                         size={'lg'}>
-                        Verify Code
+                        Next
                     </Submit>
+
                 </form>
             </div>
+            <Button size='lg' variant={'outline'}>Resend Code</Button>
         </div>
     )
 }

@@ -1,10 +1,10 @@
 'use server'
 import { graphql } from '@/gql';
-import { AccountConnectionQuery, AccountConnectionsQuery, CreateInstagramConnectionMutation, CreatePostsFromConnectionMutation, CreateYoutubeConnectionMutation, ImportedSocialVideosQuery, ImportedVideoQuery, ImportedVideoWhereInput } from '@/gql/graphql';
+import { AccountConnectionQuery, AccountConnectionsQuery, CreateInstagramConnectionMutation, CreatePostsFromConnectionMutation, CreateYoutubeConnectionMutation, ImportedVideoQuery } from '@/gql/graphql';
 import { exportPostSchema } from '@/lib/schema';
-import { GraphQLClient } from 'graphql-request';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { client } from './actions/client';
 
 const CreateInstagramConnection = graphql(`
     mutation CreateInstagramConnection($username: String!) {
@@ -178,7 +178,6 @@ const ExportAll = graphql(`
     }
 `)
 
-const client = new GraphQLClient(process.env.NEXT_PUBLIC_OOG_API_ENDPOINT!)
 
 type FormResponse = {
     success: boolean,
@@ -188,7 +187,6 @@ type FormResponse = {
 export async function createPostFromImportedVideo(prevState:FormResponse,data: FormData) {
     let result = exportPostSchema.safeParse({
         videoID: data.get('videoID'),
-        title: data.get('title'),
         body: data.get('body'),
     })
     if(!result.success) {
@@ -200,7 +198,6 @@ export async function createPostFromImportedVideo(prevState:FormResponse,data: F
     let token = cookies().get('token')?.value
     let resp = await client.request(CreatePostFromImportedVideo.toString(), {
         videoID: result.data.videoID,
-        title: result.data.title,
         body: result.data.body
     },{
         authorization: `Bearer ${token}`
@@ -238,21 +235,14 @@ export async function getAccountConnection(id: string) {
     return resp;
 }
 
-export async function getImportedVideos(id:string) {
-    let token = cookies().get('token')?.value
-    let resp:ImportedSocialVideosQuery
-    resp = await client.request(ImportedVideos.toString(),{
-        where: {
-            hasAccountConnectionWith: [
-                {
-                    id: id
-                }
-            ]
-        } as ImportedVideoWhereInput
-    },{
-        authorization: `Bearer ${token}`
-    });
-    return resp;
+
+export async function addConnection(prevState:any,data: FormData):Promise<any> {
+    let network = data.get('network');
+    if(network === 'instagram') {
+        return createInstagramConnection(prevState,data)
+    } else if(network === 'youtube') {
+        return createYoutubeConnection(prevState,data)
+    }
 }
 
 export async function createInstagramConnection(prevState:any,data: FormData):Promise<any> {

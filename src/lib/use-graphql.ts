@@ -8,7 +8,7 @@ export function useGraphQL<TResult, TVariables>(
   document: TypedDocumentString<TResult, TVariables>,
   ...[variables]: TVariables extends Record<string, never> ? [] : [TVariables]
 ): UseQueryResult<TResult> {
-  const { graphqlToken } = useAuthToken();
+  const { bearerToken } = useAuthToken();
   let name = operationName
   let queryKey = [name, variables]
   let queryFn = async ({ queryKey }:{queryKey:any}) =>
@@ -17,7 +17,7 @@ export function useGraphQL<TResult, TVariables>(
       document.toString(),
       queryKey[1] ? queryKey[1] : undefined,
       {
-        Authorization: `Bearer ${graphqlToken}`,
+        Authorization: `Bearer ${bearerToken}`,
       }
     )
 

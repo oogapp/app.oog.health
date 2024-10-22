@@ -44,11 +44,16 @@ const CurrentUser = graphql(`
         firstName
         lastName
         role
+        username
         limitedRoles
+        credential
         tenants {
             id
             name
             default
+        }
+        profileImage {
+            url
         }
         avatar {
             url

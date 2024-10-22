@@ -3,7 +3,6 @@
 import { createPostFromImportedVideo } from "@/app/social-actions"
 import { ImportedVideo } from "@/gql/graphql"
 import { useFormState } from "react-dom"
-import { Input } from "./ui/input"
 import { Submit } from "./ui/submit"
 import { Textarea } from "./ui/textarea"
 
@@ -23,13 +22,10 @@ export default function ExportForm({ video }: { video: ImportedVideo }) {
                 <form action={formAction} className="space-y-4">
                     <input type="hidden" name="videoID" value={video.id} />
                     <div>
-                        <Input name="title" defaultValue={video.title!} placeholder="Enter your post title here" />
+                        <Textarea rows={10} name="body" defaultValue={video.body!} placeholder="Enter the body of your post here" />
                     </div>
                     <div>
-                        <Textarea name="body" defaultValue={video.body!} placeholder="Enter the body of your post here" />
-                    </div>
-                    <div>
-                        <Submit>Export Post</Submit>
+                        <Submit>Post to Oog Health</Submit>
                     </div>
                 </form>
 
