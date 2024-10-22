@@ -1,5 +1,6 @@
 'use client'
 import { ImportedVideosQuery } from "@/app/actions/ImportedVideosQuery"
+import { Button } from "@/components/ui/button"
 import { ImportedVideo } from "@/gql/graphql"
 import { useGraphQL } from "@/lib/use-graphql"
 import { ChevronLeft } from "lucide-react"
@@ -36,24 +37,26 @@ export default function BulkExportPage({ params: { id } }) {
                 <div></div>
             </div>
 
+            <div>
+                <Button>
+                    Publish {ids.length} Videos
+                </Button>
+            </div>
 
-            {data?.importedVideos?.edges?.map((edge) => {
-                let video = edge?.node as ImportedVideo
-                return (
-                    <div key={video.id}>
-                        <div>
-                            <img
-                                className="w-full object-cover"
-                                src={`https://s3.amazonaws.com/${video?.bucket}/${video?.storageKey}/image.jpg`} />
-                        </div>
-                        <div>
+            <div className="grid grid-cols-2 gap-5">
+                {data?.importedVideos?.edges?.map((edge) => {
+                    let video = edge?.node as ImportedVideo
+                    return (
+                        <div key={video.id}>
                             <div>
-                                {video.body}
+                                <img
+                                    className="w-full object-cover"
+                                    src={`https://s3.amazonaws.com/${video?.bucket}/${video?.storageKey}/image.jpg`} />
                             </div>
                         </div>
-                    </div>
-                )
-            })}
+                    )
+                })}
+            </div>
 
         </div>
     )
