@@ -37,8 +37,7 @@ export default function LoginForm() {
                 </div>
 
                 <Submit
-                    className="w-full"
-                    size={'lg'}>
+                    className="w-full">
                     Send Code {pending && <span className="animate-spin">🔄</span>}
                 </Submit>
             </form>

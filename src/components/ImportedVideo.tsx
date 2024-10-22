@@ -1,13 +1,18 @@
 'use client'
 
 import { ImportedVideo, ImportedVideoExportStatus } from "@/gql/graphql"
-import { CheckCircleIcon, Loader2, PlusCircleIcon } from "lucide-react"
+import { CheckCircleIcon, CheckSquareIcon, Loader2, PlusCircleIcon, Square } from "lucide-react"
 import Link from "next/link"
+import { useImportedVideos } from "./ImportedVideos"
 
 export default function ImportedVideoCell({ video }: { video: ImportedVideo }) {
     let postId = video?.exportedVideo?.post?.id
     let exported = postId != null
     let exportStatus = video.exportStatus!
+
+    const { checkVideo, uncheckVideo, checkedVideos } = useImportedVideos()
+
+
     return (
         <div key={video.id} className="relative border border-black rounded-xl overflow-hidden">
             {exported && <div className="absolute text-xs bg-black/75 inset-0 flex flex-col items-start justify-start text-green-200">
@@ -18,6 +23,19 @@ export default function ImportedVideoCell({ video }: { video: ImportedVideo }) {
                     </div>
                 }
             </div>}
+
+            {!exported && exportStatus != ImportedVideoExportStatus.Processing &&
+                <div className="absolute right-0 top-0 bg-black rounded-md">
+
+                    {checkedVideos.includes(video.id) ?
+                        <CheckSquareIcon className="w-6 h-6 text-green-200" onClick={() => uncheckVideo(video.id)} />
+                        :
+                        <Square className="w-6 h-6 text-gray-200" onClick={() => checkVideo(video.id)} />
+                    }
+
+                </div>
+            }
+
             <img
                 className="w-full object-cover"
                 src={`https://s3.amazonaws.com/${video?.bucket}/${video?.storageKey}/image.jpg`} />

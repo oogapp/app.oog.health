@@ -21,14 +21,13 @@ export default function VerifyForm({ phone }) {
                         </div>
                     </div>
 
-                    <Submit
-                        size={'lg'}>
+                    <Submit>
                         Next
                     </Submit>
 
                 </form>
             </div>
-            <Button size='lg' variant={'outline'}>Resend Code</Button>
+            <Button variant={'outline'}>Resend Code</Button>
         </div>
     )
 }

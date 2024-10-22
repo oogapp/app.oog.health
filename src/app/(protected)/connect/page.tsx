@@ -14,7 +14,7 @@ export default function ConnectAccount() {
     const [state, formAction] = useFormState(addConnection, {})
 
     return (
-        <div className="px-3">
+        <div className="px-3 space-y-8">
             <div className="flex items-center justify-between">
                 <div>
                     <Link href="/">
@@ -28,7 +28,7 @@ export default function ConnectAccount() {
             </div>
 
             <div>
-                <form action={formAction} className="space-y-4">
+                <form action={formAction} className="space-y-6">
 
                     {state.success && <div className="text-green-600">Verification code sent</div>}
 
@@ -56,9 +56,11 @@ export default function ConnectAccount() {
                         </RadioGroup>
                     </div>
 
-                    <Submit>
-                        Connect
-                    </Submit>
+                    <div className="">
+                        <Submit>
+                            Connect
+                        </Submit>
+                    </div>
                 </form>
             </div>
         </div>
