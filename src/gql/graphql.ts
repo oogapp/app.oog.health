@@ -5831,13 +5831,15 @@ export type ImportedVideo = Node & {
   /** The bucket of the video. */
   bucket?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Time']['output'];
-  /** The status of the export */
+  /** The status of the export to post */
   exportStatus?: Maybe<ImportedVideoExportStatus>;
   /** The time the video was exported to a post */
   exportedAt?: Maybe<Scalars['Time']['output']>;
   exportedVideo?: Maybe<Video>;
   id: Scalars['ID']['output'];
-  /** The status of the import */
+  /** If the user has marked the video as ignored */
+  ignored: Scalars['Boolean']['output'];
+  /** The status of the import from external network */
   importStatus: ImportedVideoImportStatus;
   /** The time the video was created on the source platform */
   sourceCreatedAt?: Maybe<Scalars['Time']['output']>;
@@ -6018,6 +6020,9 @@ export type ImportedVideoWhereInput = {
   idLTE?: InputMaybe<Scalars['ID']['input']>;
   idNEQ?: InputMaybe<Scalars['ID']['input']>;
   idNotIn?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** ignored field predicates */
+  ignored?: InputMaybe<Scalars['Boolean']['input']>;
+  ignoredNEQ?: InputMaybe<Scalars['Boolean']['input']>;
   /** import_status field predicates */
   importStatus?: InputMaybe<ImportedVideoImportStatus>;
   importStatusIn?: InputMaybe<Array<ImportedVideoImportStatus>>;
@@ -7288,6 +7293,7 @@ export type Mutation = {
   /** Creates a PostReaction for the specified post and current user */
   createPostReaction: PostReaction;
   createPostsFromConnection?: Maybe<Scalars['String']['output']>;
+  createPostsFromImportedVideos?: Maybe<Scalars['Boolean']['output']>;
   createPubmedTopicCluster?: Maybe<PubmedTopicCluster>;
   createReply: SparkyMessage;
   /** Creates a SearchConversion for a SearchResult. This is used to track when a user clicks on a search result. */
@@ -7343,6 +7349,7 @@ export type Mutation = {
    * Also returns a draft Video object with a status of "waiting". After the video has been uploaded and ready to stream, the status will change to "ready".
    */
   generateVideoUploadURL: VideoUploadResponse;
+  ignoreImportedVideo?: Maybe<Scalars['Boolean']['output']>;
   /** Creates a Like for the specified comment and current user. If the user has already liked the comment, this will return the existing like. */
   likeComment: CommentLike;
   /** Creates a Like for the specified post and current user. If the user has already liked the post, this will return the existing like. */
@@ -7860,6 +7867,12 @@ export type MutationCreatePostsFromConnectionArgs = {
 };
 
 
+export type MutationCreatePostsFromImportedVideosArgs = {
+  accountConnectionID: Scalars['Int']['input'];
+  videoIDs: Array<Scalars['String']['input']>;
+};
+
+
 export type MutationCreatePubmedTopicClusterArgs = {
   input: CreatePubmedTopicClusterInput;
 };
@@ -8021,6 +8034,11 @@ export type MutationGenerateFileReplaceUrlArgs = {
 export type MutationGenerateFileUploadUrlArgs = {
   contentType: Scalars['String']['input'];
   fileName: Scalars['String']['input'];
+};
+
+
+export type MutationIgnoreImportedVideoArgs = {
+  videoID: Scalars['String']['input'];
 };
 
 
@@ -20687,7 +20705,7 @@ export type AccountConnectionQueryVariables = Exact<{
 }>;
 
 
-export type AccountConnectionQuery = { __typename?: 'Query', node?: { __typename?: 'AccountConnection', id: string, type: AccountConnectionType, username?: string | null, connectionStatus: AccountConnectionConnectionStatus, importStatus: AccountConnectionImportStatus, exportStatus: AccountConnectionExportStatus, profilePictureURL?: string | null } | { __typename?: 'AnatomicalModel' } | { __typename?: 'ApiQueryLog' } | { __typename?: 'ApiToken' } | { __typename?: 'Article' } | { __typename?: 'ArticleFeed' } | { __typename?: 'Audience' } | { __typename?: 'AuditLog' } | { __typename?: 'Bookmark' } | { __typename?: 'Certificate' } | { __typename?: 'CertificateSurveyAnswer' } | { __typename?: 'CertificateSurveyQuestion' } | { __typename?: 'CertificateSurveyQuestionChoice' } | { __typename?: 'ClinicalTrial' } | { __typename?: 'ClinicalTrialDocument' } | { __typename?: 'ClinicalTrialEmbedding' } | { __typename?: 'CloudflareUpload' } | { __typename?: 'Collection' } | { __typename?: 'Comment' } | { __typename?: 'CommentLike' } | { __typename?: 'CommentNamedEntity' } | { __typename?: 'Course' } | { __typename?: 'Dashboard' } | { __typename?: 'EducationCredit' } | { __typename?: 'EducationHistory' } | { __typename?: 'FaceDetectRequest' } | { __typename?: 'FinancialDisclosure' } | { __typename?: 'FinancialDisclosurePrintTemplate' } | { __typename?: 'FinancialDisclosureRole' } | { __typename?: 'FinancialDisclosureStatement' } | { __typename?: 'GiblibVideo' } | { __typename?: 'GoogleDriveFile' } | { __typename?: 'GptLog' } | { __typename?: 'HumanOntologyNode' } | { __typename?: 'Image' } | { __typename?: 'ImportedVideo' } | { __typename?: 'InsightRequest' } | { __typename?: 'InstagramScrapeLog' } | { __typename?: 'JobHistory' } | { __typename?: 'LanguageModelResponse' } | { __typename?: 'LearningObjective' } | { __typename?: 'LicenseHistory' } | { __typename?: 'Like' } | { __typename?: 'MediaItem' } | { __typename?: 'MedicalHealthTerm' } | { __typename?: 'MedicalSubjectHeading' } | { __typename?: 'Notification' } | { __typename?: 'NotificationConfig' } | { __typename?: 'NpiTaxonomy' } | { __typename?: 'Office' } | { __typename?: 'PhoneVerificationToken' } | { __typename?: 'Poll' } | { __typename?: 'PollAnswer' } | { __typename?: 'PollQuestion' } | { __typename?: 'Post' } | { __typename?: 'PostCitation' } | { __typename?: 'PostCollection' } | { __typename?: 'PostEmbedding' } | { __typename?: 'PostLearningObjective' } | { __typename?: 'PostReaction' } | { __typename?: 'PostReport' } | { __typename?: 'Provider' } | { __typename?: 'PubmedAbstractEmbedding' } | { __typename?: 'PubmedArticle' } | { __typename?: 'PubmedArticleAbstract' } | { __typename?: 'PubmedArticleEmbedding' } | { __typename?: 'PubmedCentralArticle' } | { __typename?: 'PubmedDownloadLog' } | { __typename?: 'PubmedTopicCluster' } | { __typename?: 'ReflectionAnalysis' } | { __typename?: 'ReflectionAnalysisResult' } | { __typename?: 'ReflectionAnalysisScore' } | { __typename?: 'ReflectionCriteria' } | { __typename?: 'ReportReason' } | { __typename?: 'Search' } | { __typename?: 'SearchConversion' } | { __typename?: 'SparkyChat' } | { __typename?: 'SparkyChatConfig' } | { __typename?: 'SparkyChatMessage' } | { __typename?: 'SparkyConversation' } | { __typename?: 'SparkyConversationConfigSet' } | { __typename?: 'SparkyMessage' } | { __typename?: 'SparkyPrompt' } | { __typename?: 'SparkyQuery' } | { __typename?: 'SparkyRule' } | { __typename?: 'SparkyRuleCondition' } | { __typename?: 'SparkyRuleField' } | { __typename?: 'Tag' } | { __typename?: 'Tenant' } | { __typename?: 'Topic' } | { __typename?: 'TopicClassification' } | { __typename?: 'TopicCluster' } | { __typename?: 'TopicNpiTaxonomy' } | { __typename?: 'TopicPubmedTopicCluster' } | { __typename?: 'TranscriptionRequest' } | { __typename?: 'Upload' } | { __typename?: 'User' } | { __typename?: 'UserAnalyticsEvent' } | { __typename?: 'UserBlock' } | { __typename?: 'UserCollectionCompletion' } | { __typename?: 'UserLink' } | { __typename?: 'UserMute' } | { __typename?: 'UserNotificationToken' } | { __typename?: 'UserReport' } | { __typename?: 'UserTenant' } | { __typename?: 'UserVideoEvent' } | { __typename?: 'VerificationRequest' } | { __typename?: 'Video' } | { __typename?: 'VideoFrame' } | { __typename?: 'VideoPipeline' } | { __typename?: 'WorkExperience' } | null };
+export type AccountConnectionQuery = { __typename?: 'Query', node?: { __typename?: 'AccountConnection', id: string, type: AccountConnectionType, username?: string | null, connectionStatus: AccountConnectionConnectionStatus, updatedAt: any, importStatus: AccountConnectionImportStatus, exportStatus: AccountConnectionExportStatus, profilePictureURL?: string | null } | { __typename?: 'AnatomicalModel' } | { __typename?: 'ApiQueryLog' } | { __typename?: 'ApiToken' } | { __typename?: 'Article' } | { __typename?: 'ArticleFeed' } | { __typename?: 'Audience' } | { __typename?: 'AuditLog' } | { __typename?: 'Bookmark' } | { __typename?: 'Certificate' } | { __typename?: 'CertificateSurveyAnswer' } | { __typename?: 'CertificateSurveyQuestion' } | { __typename?: 'CertificateSurveyQuestionChoice' } | { __typename?: 'ClinicalTrial' } | { __typename?: 'ClinicalTrialDocument' } | { __typename?: 'ClinicalTrialEmbedding' } | { __typename?: 'CloudflareUpload' } | { __typename?: 'Collection' } | { __typename?: 'Comment' } | { __typename?: 'CommentLike' } | { __typename?: 'CommentNamedEntity' } | { __typename?: 'Course' } | { __typename?: 'Dashboard' } | { __typename?: 'EducationCredit' } | { __typename?: 'EducationHistory' } | { __typename?: 'FaceDetectRequest' } | { __typename?: 'FinancialDisclosure' } | { __typename?: 'FinancialDisclosurePrintTemplate' } | { __typename?: 'FinancialDisclosureRole' } | { __typename?: 'FinancialDisclosureStatement' } | { __typename?: 'GiblibVideo' } | { __typename?: 'GoogleDriveFile' } | { __typename?: 'GptLog' } | { __typename?: 'HumanOntologyNode' } | { __typename?: 'Image' } | { __typename?: 'ImportedVideo' } | { __typename?: 'InsightRequest' } | { __typename?: 'InstagramScrapeLog' } | { __typename?: 'JobHistory' } | { __typename?: 'LanguageModelResponse' } | { __typename?: 'LearningObjective' } | { __typename?: 'LicenseHistory' } | { __typename?: 'Like' } | { __typename?: 'MediaItem' } | { __typename?: 'MedicalHealthTerm' } | { __typename?: 'MedicalSubjectHeading' } | { __typename?: 'Notification' } | { __typename?: 'NotificationConfig' } | { __typename?: 'NpiTaxonomy' } | { __typename?: 'Office' } | { __typename?: 'PhoneVerificationToken' } | { __typename?: 'Poll' } | { __typename?: 'PollAnswer' } | { __typename?: 'PollQuestion' } | { __typename?: 'Post' } | { __typename?: 'PostCitation' } | { __typename?: 'PostCollection' } | { __typename?: 'PostEmbedding' } | { __typename?: 'PostLearningObjective' } | { __typename?: 'PostReaction' } | { __typename?: 'PostReport' } | { __typename?: 'Provider' } | { __typename?: 'PubmedAbstractEmbedding' } | { __typename?: 'PubmedArticle' } | { __typename?: 'PubmedArticleAbstract' } | { __typename?: 'PubmedArticleEmbedding' } | { __typename?: 'PubmedCentralArticle' } | { __typename?: 'PubmedDownloadLog' } | { __typename?: 'PubmedTopicCluster' } | { __typename?: 'ReflectionAnalysis' } | { __typename?: 'ReflectionAnalysisResult' } | { __typename?: 'ReflectionAnalysisScore' } | { __typename?: 'ReflectionCriteria' } | { __typename?: 'ReportReason' } | { __typename?: 'Search' } | { __typename?: 'SearchConversion' } | { __typename?: 'SparkyChat' } | { __typename?: 'SparkyChatConfig' } | { __typename?: 'SparkyChatMessage' } | { __typename?: 'SparkyConversation' } | { __typename?: 'SparkyConversationConfigSet' } | { __typename?: 'SparkyMessage' } | { __typename?: 'SparkyPrompt' } | { __typename?: 'SparkyQuery' } | { __typename?: 'SparkyRule' } | { __typename?: 'SparkyRuleCondition' } | { __typename?: 'SparkyRuleField' } | { __typename?: 'Tag' } | { __typename?: 'Tenant' } | { __typename?: 'Topic' } | { __typename?: 'TopicClassification' } | { __typename?: 'TopicCluster' } | { __typename?: 'TopicNpiTaxonomy' } | { __typename?: 'TopicPubmedTopicCluster' } | { __typename?: 'TranscriptionRequest' } | { __typename?: 'Upload' } | { __typename?: 'User' } | { __typename?: 'UserAnalyticsEvent' } | { __typename?: 'UserBlock' } | { __typename?: 'UserCollectionCompletion' } | { __typename?: 'UserLink' } | { __typename?: 'UserMute' } | { __typename?: 'UserNotificationToken' } | { __typename?: 'UserReport' } | { __typename?: 'UserTenant' } | { __typename?: 'UserVideoEvent' } | { __typename?: 'VerificationRequest' } | { __typename?: 'Video' } | { __typename?: 'VideoFrame' } | { __typename?: 'VideoPipeline' } | { __typename?: 'WorkExperience' } | null };
 
 export type CreatePostFromImportedVideoMutationVariables = Exact<{
   videoID: Scalars['String']['input'];
@@ -20695,6 +20713,14 @@ export type CreatePostFromImportedVideoMutationVariables = Exact<{
 
 
 export type CreatePostFromImportedVideoMutation = { __typename?: 'Mutation', createPostFromImportedVideo?: { __typename?: 'Post', id: string } | null };
+
+export type CreatePostsFromImportedVideosMutationVariables = Exact<{
+  accountConnectionID: Scalars['Int']['input'];
+  videoIDs: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type CreatePostsFromImportedVideosMutation = { __typename?: 'Mutation', createPostsFromImportedVideos?: boolean | null };
 
 export type RefreshInstagramConnectionMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -20900,6 +20926,7 @@ export const AccountConnectionDocument = new TypedDocumentString(`
       type
       username
       connectionStatus
+      updatedAt
       importStatus
       exportStatus
       profilePictureURL
@@ -20914,6 +20941,14 @@ export const CreatePostFromImportedVideoDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<CreatePostFromImportedVideoMutation, CreatePostFromImportedVideoMutationVariables>;
+export const CreatePostsFromImportedVideosDocument = new TypedDocumentString(`
+    mutation CreatePostsFromImportedVideos($accountConnectionID: Int!, $videoIDs: [String!]!) {
+  createPostsFromImportedVideos(
+    accountConnectionID: $accountConnectionID
+    videoIDs: $videoIDs
+  )
+}
+    `) as unknown as TypedDocumentString<CreatePostsFromImportedVideosMutation, CreatePostsFromImportedVideosMutationVariables>;
 export const RefreshInstagramConnectionDocument = new TypedDocumentString(`
     mutation RefreshInstagramConnection($id: Int!) {
   refreshInstagramConnection(id: $id) {

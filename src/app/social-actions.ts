@@ -132,6 +132,7 @@ const AccountConnection = graphql(`
             type
             username
             connectionStatus
+            updatedAt
             importStatus
             exportStatus
             profilePictureURL
@@ -145,6 +146,12 @@ const CreatePostFromImportedVideo = graphql(`
         createPostFromImportedVideo(videoID: $videoID) {
         id
         }
+    }
+`)
+
+const CreatePostFromImportedVideos = graphql(`
+    mutation CreatePostsFromImportedVideos($accountConnectionID:Int!,$videoIDs: [String!]!) {
+        createPostsFromImportedVideos(accountConnectionID:$accountConnectionID,videoIDs: $videoIDs)
     }
 `)
 
@@ -182,6 +189,20 @@ const ExportAll = graphql(`
 type FormResponse = {
     success: boolean,
     message: string
+}
+
+export async function createPostsFromImportedVideos(id:string,ids:string[]) {
+    let token = cookies().get('token')?.value
+    let resp = await client.request(CreatePostFromImportedVideos.toString(), {
+        accountConnectionID: id,
+        videoIDs: ids
+    },{
+        authorization: `Bearer ${token}`
+    });
+    return {
+        success: true,
+        message: 'Posts exported successfully.',
+    };
 }
 
 export async function createPostFromImportedVideo(prevState:FormResponse,data: FormData) {

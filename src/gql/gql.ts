@@ -23,8 +23,9 @@ const documents = {
     "\n    mutation CreateYoutubeConnection($username: String!) {\n        createYoutubeConnection(username: $username) {\n            id\n        }\n    }\n": types.CreateYoutubeConnectionDocument,
     "\n    query AccountConnections(\n        $first: Int\n        $last: Int\n        $before: Cursor\n        $after: Cursor\n        $where: AccountConnectionWhereInput\n    ) {\n        accountConnections(\n        first: $first\n        last: $last\n        before: $before\n        after: $after\n        where: $where\n        ) {\n        totalCount\n        pageInfo {\n            startCursor\n            endCursor\n            hasNextPage\n            hasPreviousPage\n        }\n        edges {\n            node {\n            id\n            type\n            username\n            connectionStatus\n            exportStatus\n            importStatus\n            profilePictureURL\n            }\n        }\n        }\n    }\n": types.AccountConnectionsDocument,
     "\n    query ImportedVideo($id: ID!) {\n        node(id: $id) {\n        ... on ImportedVideo {\n            id\n            bucket\n            storageKey\n            title\n            body\n            exportStatus\n            accountConnectionID\n            exportedVideo {\n                id\n                post {\n                id\n                }\n            }\n        }\n        }\n    }\n": types.ImportedVideoDocument,
-    "\n    query AccountConnection($id: ID!) {\n        node(id: $id) {\n        ... on AccountConnection {\n            id\n            type\n            username\n            connectionStatus\n            importStatus\n            exportStatus\n            profilePictureURL\n        }\n        }\n    }\n": types.AccountConnectionDocument,
+    "\n    query AccountConnection($id: ID!) {\n        node(id: $id) {\n        ... on AccountConnection {\n            id\n            type\n            username\n            connectionStatus\n            updatedAt\n            importStatus\n            exportStatus\n            profilePictureURL\n        }\n        }\n    }\n": types.AccountConnectionDocument,
     "\n    mutation CreatePostFromImportedVideo($videoID: String!) {\n        createPostFromImportedVideo(videoID: $videoID) {\n        id\n        }\n    }\n": types.CreatePostFromImportedVideoDocument,
+    "\n    mutation CreatePostsFromImportedVideos($accountConnectionID:Int!,$videoIDs: [String!]!) {\n        createPostsFromImportedVideos(accountConnectionID:$accountConnectionID,videoIDs: $videoIDs)\n    }\n": types.CreatePostsFromImportedVideosDocument,
     "\n    mutation RefreshInstagramConnection($id: Int!) {\n        refreshInstagramConnection(id: $id) {\n        id\n        }\n    }\n": types.RefreshInstagramConnectionDocument,
     "\n    mutation RefreshTiktokConnection($id: Int!) {\n        refreshTiktokConnection(id: $id) {\n        id\n        }\n    }\n": types.RefreshTiktokConnectionDocument,
     "\n    mutation RefreshYoutubeConnection($id: Int!) {\n        refreshYoutubeConnection(id: $id) {\n        id\n        }\n    }\n": types.RefreshYoutubeConnectionDocument,
@@ -70,11 +71,15 @@ export function graphql(source: "\n    query ImportedVideo($id: ID!) {\n        
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query AccountConnection($id: ID!) {\n        node(id: $id) {\n        ... on AccountConnection {\n            id\n            type\n            username\n            connectionStatus\n            importStatus\n            exportStatus\n            profilePictureURL\n        }\n        }\n    }\n"): typeof import('./graphql').AccountConnectionDocument;
+export function graphql(source: "\n    query AccountConnection($id: ID!) {\n        node(id: $id) {\n        ... on AccountConnection {\n            id\n            type\n            username\n            connectionStatus\n            updatedAt\n            importStatus\n            exportStatus\n            profilePictureURL\n        }\n        }\n    }\n"): typeof import('./graphql').AccountConnectionDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation CreatePostFromImportedVideo($videoID: String!) {\n        createPostFromImportedVideo(videoID: $videoID) {\n        id\n        }\n    }\n"): typeof import('./graphql').CreatePostFromImportedVideoDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation CreatePostsFromImportedVideos($accountConnectionID:Int!,$videoIDs: [String!]!) {\n        createPostsFromImportedVideos(accountConnectionID:$accountConnectionID,videoIDs: $videoIDs)\n    }\n"): typeof import('./graphql').CreatePostsFromImportedVideosDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -2,19 +2,20 @@
 
 import { ImportedVideo, ImportedVideoExportStatus } from "@/gql/graphql"
 import { CheckCircleIcon, CheckSquareIcon, Loader2, PlusCircleIcon, Square } from "lucide-react"
-import Link from "next/link"
 import { useImportedVideos } from "./ImportedVideos"
 
 export default function ImportedVideoCell({ video }: { video: ImportedVideo }) {
     let postId = video?.exportedVideo?.post?.id
     let exported = postId != null
     let exportStatus = video.exportStatus!
+    let processing = ImportedVideoExportStatus.Processing == exportStatus
 
-    const { checkVideo, uncheckVideo, checkedVideos } = useImportedVideos()
+    const { checkVideo, uncheckVideo, checkedVideos, confirmPublish } = useImportedVideos()
 
 
     return (
         <div key={video.id} className="relative border border-black rounded-xl overflow-hidden">
+
             {exported && <div className="absolute text-xs bg-black/75 inset-0 flex flex-col items-start justify-start text-green-200">
                 {video?.exportedVideo?.id &&
                     <div className="rounded-md bg-black/30 text-white p-2 m-2 gap-x-2 flex items-center">
@@ -53,10 +54,12 @@ export default function ImportedVideoCell({ video }: { video: ImportedVideo }) {
             */}
 
             {!exported && exportStatus != ImportedVideoExportStatus.Processing &&
-                <Link href={`/social/${video.accountConnectionID}/export/${video.id}`} className="text-sm items-center justify-center flex gap-x-2 absolute bottom-0 p-2 bg-gray-900 right-0 left-0">
+                <div
+                    onClick={() => confirmPublish([video.id])}
+                    className="text-sm items-center justify-center flex gap-x-2 absolute bottom-0 p-2 bg-gray-900 right-0 left-0">
                     <PlusCircleIcon className="w-4 h-4 inline-block" />
                     Create Post
-                </Link>}
+                </div>}
         </div>
     )
 }
