@@ -18,7 +18,7 @@ export default function ImportedVideoCell({ video }: { video: ImportedVideo }) {
 
             {exported && <div className="absolute text-xs bg-black/75 inset-0 flex flex-col items-start justify-start text-green-200">
                 {video?.exportedVideo?.id &&
-                    <div className="rounded-md bg-black/30 text-white p-2 m-2 gap-x-2 flex items-center">
+                    <div className="rounded-md bg-black/30 text-green-200 p-2 m-2 gap-x-2 flex items-center">
                         <CheckCircleIcon className="w-4 h-4 inline-block" />
                         Post Created
                     </div>

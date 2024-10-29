@@ -73,12 +73,13 @@ export default async function AccountConnectionPage({ params }) {
                                     </div>
                                     <div className="text-xs text-gray-400 space-y-1">
                                         <div>Last Refreshed: {format(parseISO(conn.updatedAt), "Pp")}</div>
+                                        <div>Total Published: {conn.totalPublished}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-3">
                         <Toolbar conn={conn} />
                     </div>
 

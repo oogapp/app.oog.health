@@ -53,6 +53,9 @@ const AccountConnections = graphql(`
             exportStatus
             importStatus
             profilePictureURL
+            totalPublished
+            totalIgnored
+
             }
         }
         }
@@ -81,48 +84,6 @@ const ImportedVideo = graphql(`
     }
 `)
 
-const ImportedVideos = graphql(`
-    query ImportedSocialVideos(
-        $first: Int
-        $last: Int
-        $before: Cursor
-        $after: Cursor
-        $where: ImportedVideoWhereInput
-    ) {
-        importedVideos(
-        first: $first
-        last: $last
-        before: $before
-        after: $after
-        where: $where
-        ) {
-        totalCount
-        pageInfo {
-            startCursor
-            endCursor
-            hasNextPage
-            hasPreviousPage
-        }
-        edges {
-            node {
-            id
-            bucket
-            storageKey
-            title
-            body
-            exportStatus
-            accountConnectionID
-            exportedVideo {
-                id
-                post {
-                id
-                }
-            }
-            }
-        }
-        }
-    }
-`)
 
 const AccountConnection = graphql(`
     query AccountConnection($id: ID!) {
@@ -136,6 +97,8 @@ const AccountConnection = graphql(`
             importStatus
             exportStatus
             profilePictureURL
+            totalPublished
+            totalIgnored
         }
         }
     }
@@ -185,10 +148,30 @@ const ExportAll = graphql(`
     }
 `)
 
+const IgnoreVideos = graphql(`
+    mutation IgnoreVideos($accountConnectionID: Int!, $videoIDs: [String!]!) {
+        toggleIgnoreImportedVideos(accountConnectionID: $accountConnectionID, videoIDs: $videoIDs)
+    }
+`)
+
 
 type FormResponse = {
     success: boolean,
     message: string
+}
+
+export async function ignoreVideos(id:string,ids:string[]) {
+    let token = cookies().get('token')?.value
+    let resp = await client.request(IgnoreVideos.toString(), {
+        accountConnectionID: id,
+        videoIDs: ids
+    },{
+        authorization: `Bearer ${token}`
+    });
+    return {
+        success: true,
+        message: 'Videos ignored successfully.',
+    };
 }
 
 export async function createPostsFromImportedVideos(id:string,ids:string[]) {

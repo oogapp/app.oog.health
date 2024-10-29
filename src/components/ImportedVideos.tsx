@@ -1,8 +1,9 @@
 'use client'
 import { ImportedVideosQuery } from '@/app/actions/ImportedVideosQuery'
 import { AccountConnection, ImportedVideo } from "@/gql/graphql"
+import { useDebounce } from '@/lib/use-debounce'
 import { useGraphQL } from "@/lib/use-graphql"
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ImportedVideoCell from "./ImportedVideo"
 
 // create a useInterval hook
@@ -25,6 +26,7 @@ function useInterval(callback, delay) {
 }
 
 interface ImportedVideosContextType {
+    search: string;
     connection: AccountConnection | null;
     videos: ImportedVideo[];
     videosToPublish: string[];
@@ -34,9 +36,12 @@ interface ImportedVideosContextType {
     uncheckVideo: (videoID: string) => void;
     confirmPublish: (ids: string[]) => void;
     cancelPublish: () => void;
+    refetch?: () => void;
+    setSearch: (search: string) => void;
 }
 
 const initialState = {
+    search: '',
     connection: null,
     videos: [],
     checkedVideos: [],
@@ -46,6 +51,8 @@ const initialState = {
     uncheckVideo: (videoID: string) => { },
     confirmPublish: (ids: string[]) => { },
     cancelPublish: () => { },
+    refetch: () => { },
+    setSearch: (search: string) => { }
 };
 
 export const ImportedVideosContext = React.createContext<ImportedVideosContextType>(initialState);
@@ -56,6 +63,8 @@ export function ImportedVideosProvider({ connection, children }: { connection: A
     const [videosToPublish, setVideosToPublish] = React.useState<string[]>([]);
     const [showConfirmPublish, setShowConfirmPublish] = React.useState<boolean>(false);
     const [videos, setVideos] = React.useState<ImportedVideo[]>([]);
+    const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 250);
 
     const checkVideo = (videoID: string) => {
         setCheckedVideos([...checkedVideos, videoID]);
@@ -82,11 +91,19 @@ export function ImportedVideosProvider({ connection, children }: { connection: A
         ImportedVideosQuery,
         {
             where: {
+                ignored: false,
                 hasAccountConnectionWith: [
                     {
                         id: connection.id
                     }
-                ]
+                ],
+                or: debouncedSearch != "" ? [
+                    {
+                        titleContainsFold: debouncedSearch
+                    }, {
+                        bodyContainsFold: debouncedSearch
+                    }
+                ] : []
             }
         }
     )
@@ -106,6 +123,7 @@ export function ImportedVideosProvider({ connection, children }: { connection: A
 
     return (
         <ImportedVideosContext.Provider value={{
+            search,
             connection,
             checkedVideos,
             confirmPublish,
@@ -114,7 +132,9 @@ export function ImportedVideosProvider({ connection, children }: { connection: A
             showConfirmPublish,
             cancelPublish,
             videosToPublish,
-            videos
+            videos,
+            refetch,
+            setSearch,
         }}>
             {children}
         </ImportedVideosContext.Provider>

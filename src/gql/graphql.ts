@@ -46,6 +46,8 @@ export type AccountConnection = Node & {
   /** The scrape logs for this account connection */
   instagramScrapeLogs?: Maybe<Array<InstagramScrapeLog>>;
   profilePictureURL?: Maybe<Scalars['String']['output']>;
+  totalIgnored: Scalars['Int']['output'];
+  totalPublished: Scalars['Int']['output'];
   /** The type of account connection */
   type: AccountConnectionType;
   updatedAt: Scalars['Time']['output'];
@@ -198,6 +200,24 @@ export type AccountConnectionWhereInput = {
   profilePictureURLNEQ?: InputMaybe<Scalars['String']['input']>;
   profilePictureURLNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
   profilePictureURLNotNil?: InputMaybe<Scalars['Boolean']['input']>;
+  /** total_ignored field predicates */
+  totalIgnored?: InputMaybe<Scalars['Int']['input']>;
+  totalIgnoredGT?: InputMaybe<Scalars['Int']['input']>;
+  totalIgnoredGTE?: InputMaybe<Scalars['Int']['input']>;
+  totalIgnoredIn?: InputMaybe<Array<Scalars['Int']['input']>>;
+  totalIgnoredLT?: InputMaybe<Scalars['Int']['input']>;
+  totalIgnoredLTE?: InputMaybe<Scalars['Int']['input']>;
+  totalIgnoredNEQ?: InputMaybe<Scalars['Int']['input']>;
+  totalIgnoredNotIn?: InputMaybe<Array<Scalars['Int']['input']>>;
+  /** total_published field predicates */
+  totalPublished?: InputMaybe<Scalars['Int']['input']>;
+  totalPublishedGT?: InputMaybe<Scalars['Int']['input']>;
+  totalPublishedGTE?: InputMaybe<Scalars['Int']['input']>;
+  totalPublishedIn?: InputMaybe<Array<Scalars['Int']['input']>>;
+  totalPublishedLT?: InputMaybe<Scalars['Int']['input']>;
+  totalPublishedLTE?: InputMaybe<Scalars['Int']['input']>;
+  totalPublishedNEQ?: InputMaybe<Scalars['Int']['input']>;
+  totalPublishedNotIn?: InputMaybe<Array<Scalars['Int']['input']>>;
   /** type field predicates */
   type?: InputMaybe<AccountConnectionType>;
   typeIn?: InputMaybe<Array<AccountConnectionType>>;
@@ -3764,11 +3784,15 @@ export type CreateUserInput = {
   bio?: InputMaybe<Scalars['String']['input']>;
   blockedUserIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
   bookmarkedPostIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** The city the user is located in */
+  city?: InputMaybe<Scalars['String']['input']>;
   /** The CME goal date of the user */
   cmeGoalDate?: InputMaybe<Scalars['Time']['input']>;
   /** The CME goal value of the user */
   cmeGoalValue?: InputMaybe<Scalars['String']['input']>;
   commentIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** The country the user is located in, as a 2 digit ISO code */
+  country?: InputMaybe<Scalars['String']['input']>;
   coursesCreatedIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
   coursesFacultyIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
   coursesReviewedIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
@@ -3777,6 +3801,8 @@ export type CreateUserInput = {
   credential?: InputMaybe<Scalars['String']['input']>;
   /** (Deprecated, use status instead) Whether the user is disabled */
   disabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The date of birth of the user */
+  dob?: InputMaybe<Scalars['Time']['input']>;
   educationCreditIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
   educationHistoryIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
   /** The email address of the user */
@@ -3826,6 +3852,8 @@ export type CreateUserInput = {
   phone?: InputMaybe<Scalars['String']['input']>;
   postIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
   postReportIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** The start date of the professional experience of the user */
+  professionalExperienceStartDate?: InputMaybe<Scalars['Time']['input']>;
   profileImageID?: InputMaybe<Scalars['ID']['input']>;
   /** Whether reflections are disabled on posts authored by this user */
   reflectionsOnAuthoredPostsDisabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3834,6 +3862,8 @@ export type CreateUserInput = {
   role?: InputMaybe<UserRole>;
   searchIDs?: InputMaybe<Array<Scalars['ID']['input']>>;
   specialtyID?: InputMaybe<Scalars['ID']['input']>;
+  /** The state or province the user is located in, as a 2 digit ISO code */
+  state?: InputMaybe<Scalars['String']['input']>;
   /** The status of the user */
   status?: InputMaybe<UserStatus>;
   /** Whether the user has should appear in the suggested users list */
@@ -6461,6 +6491,14 @@ export type JobHistoryWhereInput = {
   statusNotIn?: InputMaybe<Array<JobHistoryStatus>>;
 };
 
+export type JoinWaitListInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  npiNumber?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['String']['input'];
+};
+
 export type Journal = {
   __typename?: 'Journal';
   isoAbbreviation?: Maybe<Scalars['String']['output']>;
@@ -7350,6 +7388,7 @@ export type Mutation = {
    */
   generateVideoUploadURL: VideoUploadResponse;
   ignoreImportedVideo?: Maybe<Scalars['Boolean']['output']>;
+  joinWaitList?: Maybe<WaitlistEntry>;
   /** Creates a Like for the specified comment and current user. If the user has already liked the comment, this will return the existing like. */
   likeComment: CommentLike;
   /** Creates a Like for the specified post and current user. If the user has already liked the post, this will return the existing like. */
@@ -7382,6 +7421,7 @@ export type Mutation = {
   /** Reports a user specified by ID */
   reportUser: UserReport;
   sendChatMessage: SparkyChatMessage;
+  sendOTPV2?: Maybe<OtpV2Status>;
   /** Sends a phone OTP to the given phone number. Exchange the OTP for a JWT auth token */
   sendPhoneOTP: Scalars['Boolean']['output'];
   /** Creates a new user with the `User` role */
@@ -7399,6 +7439,7 @@ export type Mutation = {
   submitCollectonSurvey: Scalars['Boolean']['output'];
   /** Submits a verification request for the current user. The verification document must be uploaded to the URL returned by `generateVerificationRequest` first. */
   submitVerificationRequest: VerificationRequest;
+  toggleIgnoreImportedVideos?: Maybe<Scalars['Boolean']['output']>;
   unLikeComment: Scalars['Boolean']['output'];
   unLikePost: Scalars['Boolean']['output'];
   /** Unblocks the specified user for the current user. */
@@ -7435,6 +7476,7 @@ export type Mutation = {
   updateUser: User;
   /** Updates a link for the current users bio */
   updateUserLink: UserLink;
+  updateWaitListEntry?: Maybe<WaitlistEntry>;
   /** Updates a WorkExperience entry for the current user */
   updateWorkExperience: WorkExperience;
   /** Verify's the phone number and OTP match */
@@ -8042,6 +8084,11 @@ export type MutationIgnoreImportedVideoArgs = {
 };
 
 
+export type MutationJoinWaitListArgs = {
+  input: JoinWaitListInput;
+};
+
+
 export type MutationLikeCommentArgs = {
   input: LikeCommentInput;
 };
@@ -8135,6 +8182,11 @@ export type MutationSendChatMessageArgs = {
 };
 
 
+export type MutationSendOtpv2Args = {
+  phone: Scalars['String']['input'];
+};
+
+
 export type MutationSendPhoneOtpArgs = {
   phone: Scalars['String']['input'];
 };
@@ -8167,6 +8219,12 @@ export type MutationSubmitCollectonSurveyArgs = {
 export type MutationSubmitVerificationRequestArgs = {
   id: Scalars['ID']['input'];
   input: SubmitVerificationRequestInput;
+};
+
+
+export type MutationToggleIgnoreImportedVideosArgs = {
+  accountConnectionID: Scalars['Int']['input'];
+  videoIDs: Array<Scalars['String']['input']>;
 };
 
 
@@ -8310,6 +8368,12 @@ export type MutationUpdateUserArgs = {
 export type MutationUpdateUserLinkArgs = {
   id: Scalars['ID']['input'];
   input: UpdateUserLinkInput;
+};
+
+
+export type MutationUpdateWaitListEntryArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateWaitlistEntryInput;
 };
 
 
@@ -9099,6 +9163,11 @@ export enum OrderDirection {
   Desc = 'DESC'
 }
 
+export type OtpV2Status = {
+  __typename?: 'OtpV2Status';
+  phoneStatus?: Maybe<PhoneStatus>;
+};
+
 /**
  * Information about pagination in a connection.
  * https://relay.dev/graphql/connections.htm#sec-undefined.PageInfo
@@ -9126,6 +9195,12 @@ export type PartOfSpeechTag = {
   tag?: Maybe<Scalars['String']['output']>;
   text?: Maybe<Scalars['String']['output']>;
 };
+
+export enum PhoneStatus {
+  InUse = 'InUse',
+  NotFound = 'NotFound',
+  WaitListed = 'WaitListed'
+}
 
 export type PhoneVerificationResponse = {
   __typename?: 'PhoneVerificationResponse';
@@ -11695,6 +11770,7 @@ export type Query = {
   certificateSurveyQuestionChoices: CertificateSurveyQuestionChoiceConnection;
   certificateSurveyQuestions: CertificateSurveyQuestionConnection;
   certificates: CertificateConnection;
+  checkWaitListStatus?: Maybe<WaitlistEntry>;
   clinicalTrialConditionCounts?: Maybe<Array<ClinicalTrialConditionCount>>;
   clinicalTrialMapPoints?: Maybe<Array<ClinicalTrialMapPoint>>;
   clinicalTrialStatusCounts?: Maybe<Array<ClinicalTrialStatusCount>>;
@@ -11810,6 +11886,7 @@ export type Query = {
   video: Video;
   videoPipelines: VideoPipelineConnection;
   videos: VideoConnection;
+  waitlistEntries: WaitlistEntryConnection;
   watchHistoryByLearningObjective: Array<WatchHistoryForLearningObjective>;
   workExperiences: WorkExperienceConnection;
 };
@@ -11989,6 +12066,11 @@ export type QueryCertificatesArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<CertificateWhereInput>;
+};
+
+
+export type QueryCheckWaitListStatusArgs = {
+  phone: Scalars['String']['input'];
 };
 
 
@@ -12760,6 +12842,16 @@ export type QueryVideosArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<VideoOrder>;
   where?: InputMaybe<VideoWhereInput>;
+};
+
+
+export type QueryWaitlistEntriesArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<WaitlistEntryOrder>;
+  where?: InputMaybe<WaitlistEntryWhereInput>;
 };
 
 
@@ -17355,19 +17447,24 @@ export type UpdateUserInput = {
   avatarID?: InputMaybe<Scalars['ID']['input']>;
   /** The bio of the user */
   bio?: InputMaybe<Scalars['String']['input']>;
+  /** The city the user is located in */
+  city?: InputMaybe<Scalars['String']['input']>;
   clearAPITokens?: InputMaybe<Scalars['Boolean']['input']>;
   clearAccountConnections?: InputMaybe<Scalars['Boolean']['input']>;
   clearAvatar?: InputMaybe<Scalars['Boolean']['input']>;
   clearBio?: InputMaybe<Scalars['Boolean']['input']>;
   clearBlockedUsers?: InputMaybe<Scalars['Boolean']['input']>;
   clearBookmarkedPosts?: InputMaybe<Scalars['Boolean']['input']>;
+  clearCity?: InputMaybe<Scalars['Boolean']['input']>;
   clearCmeGoalDate?: InputMaybe<Scalars['Boolean']['input']>;
   clearCmeGoalValue?: InputMaybe<Scalars['Boolean']['input']>;
   clearComments?: InputMaybe<Scalars['Boolean']['input']>;
+  clearCountry?: InputMaybe<Scalars['Boolean']['input']>;
   clearCoursesCreated?: InputMaybe<Scalars['Boolean']['input']>;
   clearCoursesFaculty?: InputMaybe<Scalars['Boolean']['input']>;
   clearCoursesReviewed?: InputMaybe<Scalars['Boolean']['input']>;
   clearCredential?: InputMaybe<Scalars['Boolean']['input']>;
+  clearDob?: InputMaybe<Scalars['Boolean']['input']>;
   clearEducationCredits?: InputMaybe<Scalars['Boolean']['input']>;
   clearEducationHistory?: InputMaybe<Scalars['Boolean']['input']>;
   clearEmail?: InputMaybe<Scalars['Boolean']['input']>;
@@ -17398,10 +17495,12 @@ export type UpdateUserInput = {
   clearPhone?: InputMaybe<Scalars['Boolean']['input']>;
   clearPostReports?: InputMaybe<Scalars['Boolean']['input']>;
   clearPosts?: InputMaybe<Scalars['Boolean']['input']>;
+  clearProfessionalExperienceStartDate?: InputMaybe<Scalars['Boolean']['input']>;
   clearProfileImage?: InputMaybe<Scalars['Boolean']['input']>;
   clearReportedBy?: InputMaybe<Scalars['Boolean']['input']>;
   clearSearches?: InputMaybe<Scalars['Boolean']['input']>;
   clearSpecialty?: InputMaybe<Scalars['Boolean']['input']>;
+  clearState?: InputMaybe<Scalars['Boolean']['input']>;
   clearTenants?: InputMaybe<Scalars['Boolean']['input']>;
   clearTopics?: InputMaybe<Scalars['Boolean']['input']>;
   clearTotalCmeEarned?: InputMaybe<Scalars['Boolean']['input']>;
@@ -17413,11 +17512,15 @@ export type UpdateUserInput = {
   cmeGoalDate?: InputMaybe<Scalars['Time']['input']>;
   /** The CME goal value of the user */
   cmeGoalValue?: InputMaybe<Scalars['String']['input']>;
+  /** The country the user is located in, as a 2 digit ISO code */
+  country?: InputMaybe<Scalars['String']['input']>;
   createdAt?: InputMaybe<Scalars['Time']['input']>;
   /** The credential of the user, ie MD, DO, PA, NP, etc. Note: Credentials are normalized to uppercase and any periods are removed. */
   credential?: InputMaybe<Scalars['String']['input']>;
   /** (Deprecated, use status instead) Whether the user is disabled */
   disabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The date of birth of the user */
+  dob?: InputMaybe<Scalars['Time']['input']>;
   /** The email address of the user */
   email?: InputMaybe<Scalars['String']['input']>;
   feedID?: InputMaybe<Scalars['ID']['input']>;
@@ -17450,6 +17553,8 @@ export type UpdateUserInput = {
   password?: InputMaybe<Scalars['String']['input']>;
   /** The phone number of the user, stored in E.164 format */
   phone?: InputMaybe<Scalars['String']['input']>;
+  /** The start date of the professional experience of the user */
+  professionalExperienceStartDate?: InputMaybe<Scalars['Time']['input']>;
   profileImageID?: InputMaybe<Scalars['ID']['input']>;
   /** Whether reflections are disabled on posts authored by this user */
   reflectionsOnAuthoredPostsDisabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -17488,6 +17593,8 @@ export type UpdateUserInput = {
   /** The role of the user */
   role?: InputMaybe<UserRole>;
   specialtyID?: InputMaybe<Scalars['ID']['input']>;
+  /** The state or province the user is located in, as a 2 digit ISO code */
+  state?: InputMaybe<Scalars['String']['input']>;
   /** The status of the user */
   status?: InputMaybe<UserStatus>;
   /** Whether the user has should appear in the suggested users list */
@@ -17692,6 +17799,26 @@ export type UpdateVideoInput = {
   wordcloud?: InputMaybe<Scalars['String']['input']>;
   workflowID?: InputMaybe<Scalars['String']['input']>;
   workflowRunID?: InputMaybe<Scalars['String']['input']>;
+};
+
+/**
+ * UpdateWaitlistEntryInput is used for update WaitlistEntry object.
+ * Input was generated by ent.
+ */
+export type UpdateWaitlistEntryInput = {
+  clearEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  clearNpiNumber?: InputMaybe<Scalars['Boolean']['input']>;
+  createdAt?: InputMaybe<Scalars['Time']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  /** The NPI number for this entry */
+  npiNumber?: InputMaybe<Scalars['String']['input']>;
+  /** The phone number for this entry, stored in E.164 format. */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  /** The status of the entry */
+  status?: InputMaybe<WaitlistEntryStatus>;
+  updatedAt?: InputMaybe<Scalars['Time']['input']>;
 };
 
 /**
@@ -17912,6 +18039,8 @@ export type User = Node & {
   /** The posts the user has bookmarked */
   bookmarkedPosts?: Maybe<Array<Post>>;
   bookmarks?: Maybe<Array<Bookmark>>;
+  /** The city the user is located in */
+  city?: Maybe<Scalars['String']['output']>;
   /** The CME goal date of the user */
   cmeGoalDate?: Maybe<Scalars['Time']['output']>;
   /** The CME goal value of the user */
@@ -17919,6 +18048,8 @@ export type User = Node & {
   commentLikes?: Maybe<Array<CommentLike>>;
   /** The comments the user has made */
   comments?: Maybe<Array<Comment>>;
+  /** The country the user is located in, as a 2 digit ISO code */
+  country?: Maybe<Scalars['String']['output']>;
   /** The courses the user has created */
   coursesCreated?: Maybe<Array<Course>>;
   /** The courses the user is faculty for */
@@ -17931,6 +18062,8 @@ export type User = Node & {
   currentTenant?: Maybe<Tenant>;
   /** (Deprecated, use status instead) Whether the user is disabled */
   disabled: Scalars['Boolean']['output'];
+  /** The date of birth of the user */
+  dob?: Maybe<Scalars['Time']['output']>;
   /** The education credits of the user */
   educationCredits?: Maybe<Array<EducationCredit>>;
   /** The education history of the user */
@@ -17999,6 +18132,8 @@ export type User = Node & {
   postReports?: Maybe<Array<PostReport>>;
   /** The posts the user has made */
   posts?: Maybe<Array<Post>>;
+  /** The start date of the professional experience of the user */
+  professionalExperienceStartDate?: Maybe<Scalars['Time']['output']>;
   /** The profile image for the user. Images are hosted using Cloudflare images. Please see https://developers.cloudflare.com/images/cloudflare-images/serve-images/ for details on how to serve images. */
   profileImage?: Maybe<Image>;
   /** Whether reflections are disabled on posts authored by this user */
@@ -18012,6 +18147,8 @@ export type User = Node & {
   shareURL?: Maybe<Scalars['String']['output']>;
   /** The NPI taxonomy of the user */
   specialty?: Maybe<NpiTaxonomy>;
+  /** The state or province the user is located in, as a 2 digit ISO code */
+  state?: Maybe<Scalars['String']['output']>;
   /** The status of the user */
   status: UserStatus;
   /** The Stream (getstream.io) chat token for the current user */
@@ -18894,6 +19031,22 @@ export type UserWhereInput = {
   bioNEQ?: InputMaybe<Scalars['String']['input']>;
   bioNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
   bioNotNil?: InputMaybe<Scalars['Boolean']['input']>;
+  /** city field predicates */
+  city?: InputMaybe<Scalars['String']['input']>;
+  cityContains?: InputMaybe<Scalars['String']['input']>;
+  cityContainsFold?: InputMaybe<Scalars['String']['input']>;
+  cityEqualFold?: InputMaybe<Scalars['String']['input']>;
+  cityGT?: InputMaybe<Scalars['String']['input']>;
+  cityGTE?: InputMaybe<Scalars['String']['input']>;
+  cityHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  cityHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  cityIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  cityIsNil?: InputMaybe<Scalars['Boolean']['input']>;
+  cityLT?: InputMaybe<Scalars['String']['input']>;
+  cityLTE?: InputMaybe<Scalars['String']['input']>;
+  cityNEQ?: InputMaybe<Scalars['String']['input']>;
+  cityNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  cityNotNil?: InputMaybe<Scalars['Boolean']['input']>;
   /** cme_goal_date field predicates */
   cmeGoalDate?: InputMaybe<Scalars['Time']['input']>;
   cmeGoalDateGT?: InputMaybe<Scalars['Time']['input']>;
@@ -18921,6 +19074,22 @@ export type UserWhereInput = {
   cmeGoalValueNEQ?: InputMaybe<Scalars['String']['input']>;
   cmeGoalValueNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
   cmeGoalValueNotNil?: InputMaybe<Scalars['Boolean']['input']>;
+  /** country field predicates */
+  country?: InputMaybe<Scalars['String']['input']>;
+  countryContains?: InputMaybe<Scalars['String']['input']>;
+  countryContainsFold?: InputMaybe<Scalars['String']['input']>;
+  countryEqualFold?: InputMaybe<Scalars['String']['input']>;
+  countryGT?: InputMaybe<Scalars['String']['input']>;
+  countryGTE?: InputMaybe<Scalars['String']['input']>;
+  countryHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  countryHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  countryIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  countryIsNil?: InputMaybe<Scalars['Boolean']['input']>;
+  countryLT?: InputMaybe<Scalars['String']['input']>;
+  countryLTE?: InputMaybe<Scalars['String']['input']>;
+  countryNEQ?: InputMaybe<Scalars['String']['input']>;
+  countryNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  countryNotNil?: InputMaybe<Scalars['Boolean']['input']>;
   /** created_at field predicates */
   createdAt?: InputMaybe<Scalars['Time']['input']>;
   createdAtGT?: InputMaybe<Scalars['Time']['input']>;
@@ -18949,6 +19118,17 @@ export type UserWhereInput = {
   /** disabled field predicates */
   disabled?: InputMaybe<Scalars['Boolean']['input']>;
   disabledNEQ?: InputMaybe<Scalars['Boolean']['input']>;
+  /** dob field predicates */
+  dob?: InputMaybe<Scalars['Time']['input']>;
+  dobGT?: InputMaybe<Scalars['Time']['input']>;
+  dobGTE?: InputMaybe<Scalars['Time']['input']>;
+  dobIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+  dobIsNil?: InputMaybe<Scalars['Boolean']['input']>;
+  dobLT?: InputMaybe<Scalars['Time']['input']>;
+  dobLTE?: InputMaybe<Scalars['Time']['input']>;
+  dobNEQ?: InputMaybe<Scalars['Time']['input']>;
+  dobNotIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+  dobNotNil?: InputMaybe<Scalars['Boolean']['input']>;
   /** email field predicates */
   email?: InputMaybe<Scalars['String']['input']>;
   emailContains?: InputMaybe<Scalars['String']['input']>;
@@ -19234,6 +19414,17 @@ export type UserWhereInput = {
   phoneNEQ?: InputMaybe<Scalars['String']['input']>;
   phoneNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
   phoneNotNil?: InputMaybe<Scalars['Boolean']['input']>;
+  /** professional_experience_start_date field predicates */
+  professionalExperienceStartDate?: InputMaybe<Scalars['Time']['input']>;
+  professionalExperienceStartDateGT?: InputMaybe<Scalars['Time']['input']>;
+  professionalExperienceStartDateGTE?: InputMaybe<Scalars['Time']['input']>;
+  professionalExperienceStartDateIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+  professionalExperienceStartDateIsNil?: InputMaybe<Scalars['Boolean']['input']>;
+  professionalExperienceStartDateLT?: InputMaybe<Scalars['Time']['input']>;
+  professionalExperienceStartDateLTE?: InputMaybe<Scalars['Time']['input']>;
+  professionalExperienceStartDateNEQ?: InputMaybe<Scalars['Time']['input']>;
+  professionalExperienceStartDateNotIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+  professionalExperienceStartDateNotNil?: InputMaybe<Scalars['Boolean']['input']>;
   /** reflections_on_authored_posts_disabled field predicates */
   reflectionsOnAuthoredPostsDisabled?: InputMaybe<Scalars['Boolean']['input']>;
   reflectionsOnAuthoredPostsDisabledNEQ?: InputMaybe<Scalars['Boolean']['input']>;
@@ -19243,6 +19434,22 @@ export type UserWhereInput = {
   roleNEQ?: InputMaybe<UserRole>;
   roleNotIn?: InputMaybe<Array<UserRole>>;
   search?: InputMaybe<Scalars['String']['input']>;
+  /** state field predicates */
+  state?: InputMaybe<Scalars['String']['input']>;
+  stateContains?: InputMaybe<Scalars['String']['input']>;
+  stateContainsFold?: InputMaybe<Scalars['String']['input']>;
+  stateEqualFold?: InputMaybe<Scalars['String']['input']>;
+  stateGT?: InputMaybe<Scalars['String']['input']>;
+  stateGTE?: InputMaybe<Scalars['String']['input']>;
+  stateHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  stateHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  stateIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  stateIsNil?: InputMaybe<Scalars['Boolean']['input']>;
+  stateLT?: InputMaybe<Scalars['String']['input']>;
+  stateLTE?: InputMaybe<Scalars['String']['input']>;
+  stateNEQ?: InputMaybe<Scalars['String']['input']>;
+  stateNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  stateNotNil?: InputMaybe<Scalars['Boolean']['input']>;
   /** status field predicates */
   status?: InputMaybe<UserStatus>;
   statusIn?: InputMaybe<Array<UserStatus>>;
@@ -20450,6 +20657,179 @@ export type VideoWhereInput = {
   workflowRunIDNotNil?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type WaitlistEntry = Node & {
+  __typename?: 'WaitlistEntry';
+  createdAt: Scalars['Time']['output'];
+  email?: Maybe<Scalars['String']['output']>;
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  lastName: Scalars['String']['output'];
+  /** The NPI number for this entry */
+  npiNumber?: Maybe<Scalars['String']['output']>;
+  /** The phone number for this entry, stored in E.164 format. */
+  phone: Scalars['String']['output'];
+  /** The status of the entry */
+  status: WaitlistEntryStatus;
+  updatedAt: Scalars['Time']['output'];
+};
+
+/** A connection to a list of items. */
+export type WaitlistEntryConnection = {
+  __typename?: 'WaitlistEntryConnection';
+  /** A list of edges. */
+  edges?: Maybe<Array<Maybe<WaitlistEntryEdge>>>;
+  /** Information to aid in pagination. */
+  pageInfo: PageInfo;
+  /** Identifies the total count of items in the connection. */
+  totalCount: Scalars['Int']['output'];
+};
+
+/** An edge in a connection. */
+export type WaitlistEntryEdge = {
+  __typename?: 'WaitlistEntryEdge';
+  /** A cursor for use in pagination. */
+  cursor: Scalars['Cursor']['output'];
+  /** The item at the end of the edge. */
+  node?: Maybe<WaitlistEntry>;
+};
+
+/** Ordering options for WaitlistEntry connections */
+export type WaitlistEntryOrder = {
+  /** The ordering direction. */
+  direction?: OrderDirection;
+  /** The field by which to order WaitlistEntries. */
+  field: WaitlistEntryOrderField;
+};
+
+/** Properties by which WaitlistEntry connections can be ordered. */
+export enum WaitlistEntryOrderField {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** WaitlistEntryStatus is enum for the field status */
+export enum WaitlistEntryStatus {
+  Approved = 'approved',
+  Denied = 'denied',
+  Pending = 'pending'
+}
+
+/**
+ * WaitlistEntryWhereInput is used for filtering WaitlistEntry objects.
+ * Input was generated by ent.
+ */
+export type WaitlistEntryWhereInput = {
+  and?: InputMaybe<Array<WaitlistEntryWhereInput>>;
+  /** created_at field predicates */
+  createdAt?: InputMaybe<Scalars['Time']['input']>;
+  createdAtGT?: InputMaybe<Scalars['Time']['input']>;
+  createdAtGTE?: InputMaybe<Scalars['Time']['input']>;
+  createdAtIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+  createdAtLT?: InputMaybe<Scalars['Time']['input']>;
+  createdAtLTE?: InputMaybe<Scalars['Time']['input']>;
+  createdAtNEQ?: InputMaybe<Scalars['Time']['input']>;
+  createdAtNotIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+  /** email field predicates */
+  email?: InputMaybe<Scalars['String']['input']>;
+  emailContains?: InputMaybe<Scalars['String']['input']>;
+  emailContainsFold?: InputMaybe<Scalars['String']['input']>;
+  emailEqualFold?: InputMaybe<Scalars['String']['input']>;
+  emailGT?: InputMaybe<Scalars['String']['input']>;
+  emailGTE?: InputMaybe<Scalars['String']['input']>;
+  emailHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  emailHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  emailIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  emailIsNil?: InputMaybe<Scalars['Boolean']['input']>;
+  emailLT?: InputMaybe<Scalars['String']['input']>;
+  emailLTE?: InputMaybe<Scalars['String']['input']>;
+  emailNEQ?: InputMaybe<Scalars['String']['input']>;
+  emailNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  emailNotNil?: InputMaybe<Scalars['Boolean']['input']>;
+  /** first_name field predicates */
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  firstNameContains?: InputMaybe<Scalars['String']['input']>;
+  firstNameContainsFold?: InputMaybe<Scalars['String']['input']>;
+  firstNameEqualFold?: InputMaybe<Scalars['String']['input']>;
+  firstNameGT?: InputMaybe<Scalars['String']['input']>;
+  firstNameGTE?: InputMaybe<Scalars['String']['input']>;
+  firstNameHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  firstNameHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  firstNameIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  firstNameLT?: InputMaybe<Scalars['String']['input']>;
+  firstNameLTE?: InputMaybe<Scalars['String']['input']>;
+  firstNameNEQ?: InputMaybe<Scalars['String']['input']>;
+  firstNameNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** id field predicates */
+  id?: InputMaybe<Scalars['ID']['input']>;
+  idGT?: InputMaybe<Scalars['ID']['input']>;
+  idGTE?: InputMaybe<Scalars['ID']['input']>;
+  idIn?: InputMaybe<Array<Scalars['ID']['input']>>;
+  idLT?: InputMaybe<Scalars['ID']['input']>;
+  idLTE?: InputMaybe<Scalars['ID']['input']>;
+  idNEQ?: InputMaybe<Scalars['ID']['input']>;
+  idNotIn?: InputMaybe<Array<Scalars['ID']['input']>>;
+  /** last_name field predicates */
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  lastNameContains?: InputMaybe<Scalars['String']['input']>;
+  lastNameContainsFold?: InputMaybe<Scalars['String']['input']>;
+  lastNameEqualFold?: InputMaybe<Scalars['String']['input']>;
+  lastNameGT?: InputMaybe<Scalars['String']['input']>;
+  lastNameGTE?: InputMaybe<Scalars['String']['input']>;
+  lastNameHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  lastNameHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  lastNameIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  lastNameLT?: InputMaybe<Scalars['String']['input']>;
+  lastNameLTE?: InputMaybe<Scalars['String']['input']>;
+  lastNameNEQ?: InputMaybe<Scalars['String']['input']>;
+  lastNameNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  not?: InputMaybe<WaitlistEntryWhereInput>;
+  /** npi_number field predicates */
+  npiNumber?: InputMaybe<Scalars['String']['input']>;
+  npiNumberContains?: InputMaybe<Scalars['String']['input']>;
+  npiNumberContainsFold?: InputMaybe<Scalars['String']['input']>;
+  npiNumberEqualFold?: InputMaybe<Scalars['String']['input']>;
+  npiNumberGT?: InputMaybe<Scalars['String']['input']>;
+  npiNumberGTE?: InputMaybe<Scalars['String']['input']>;
+  npiNumberHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  npiNumberHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  npiNumberIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  npiNumberIsNil?: InputMaybe<Scalars['Boolean']['input']>;
+  npiNumberLT?: InputMaybe<Scalars['String']['input']>;
+  npiNumberLTE?: InputMaybe<Scalars['String']['input']>;
+  npiNumberNEQ?: InputMaybe<Scalars['String']['input']>;
+  npiNumberNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  npiNumberNotNil?: InputMaybe<Scalars['Boolean']['input']>;
+  or?: InputMaybe<Array<WaitlistEntryWhereInput>>;
+  /** phone field predicates */
+  phone?: InputMaybe<Scalars['String']['input']>;
+  phoneContains?: InputMaybe<Scalars['String']['input']>;
+  phoneContainsFold?: InputMaybe<Scalars['String']['input']>;
+  phoneEqualFold?: InputMaybe<Scalars['String']['input']>;
+  phoneGT?: InputMaybe<Scalars['String']['input']>;
+  phoneGTE?: InputMaybe<Scalars['String']['input']>;
+  phoneHasPrefix?: InputMaybe<Scalars['String']['input']>;
+  phoneHasSuffix?: InputMaybe<Scalars['String']['input']>;
+  phoneIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  phoneLT?: InputMaybe<Scalars['String']['input']>;
+  phoneLTE?: InputMaybe<Scalars['String']['input']>;
+  phoneNEQ?: InputMaybe<Scalars['String']['input']>;
+  phoneNotIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** status field predicates */
+  status?: InputMaybe<WaitlistEntryStatus>;
+  statusIn?: InputMaybe<Array<WaitlistEntryStatus>>;
+  statusNEQ?: InputMaybe<WaitlistEntryStatus>;
+  statusNotIn?: InputMaybe<Array<WaitlistEntryStatus>>;
+  /** updated_at field predicates */
+  updatedAt?: InputMaybe<Scalars['Time']['input']>;
+  updatedAtGT?: InputMaybe<Scalars['Time']['input']>;
+  updatedAtGTE?: InputMaybe<Scalars['Time']['input']>;
+  updatedAtIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+  updatedAtLT?: InputMaybe<Scalars['Time']['input']>;
+  updatedAtLTE?: InputMaybe<Scalars['Time']['input']>;
+  updatedAtNEQ?: InputMaybe<Scalars['Time']['input']>;
+  updatedAtNotIn?: InputMaybe<Array<Scalars['Time']['input']>>;
+};
+
 export type WatchHistoryForLearningObjective = {
   __typename?: 'WatchHistoryForLearningObjective';
   educationCredits: Array<EducationCredit>;
@@ -20691,21 +21071,21 @@ export type AccountConnectionsQueryVariables = Exact<{
 }>;
 
 
-export type AccountConnectionsQuery = { __typename?: 'Query', accountConnections: { __typename?: 'AccountConnectionConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges?: Array<{ __typename?: 'AccountConnectionEdge', node?: { __typename?: 'AccountConnection', id: string, type: AccountConnectionType, username?: string | null, connectionStatus: AccountConnectionConnectionStatus, exportStatus: AccountConnectionExportStatus, importStatus: AccountConnectionImportStatus, profilePictureURL?: string | null } | null } | null> | null } };
+export type AccountConnectionsQuery = { __typename?: 'Query', accountConnections: { __typename?: 'AccountConnectionConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', startCursor?: any | null, endCursor?: any | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges?: Array<{ __typename?: 'AccountConnectionEdge', node?: { __typename?: 'AccountConnection', id: string, type: AccountConnectionType, username?: string | null, connectionStatus: AccountConnectionConnectionStatus, exportStatus: AccountConnectionExportStatus, importStatus: AccountConnectionImportStatus, profilePictureURL?: string | null, totalPublished: number, totalIgnored: number } | null } | null> | null } };
 
 export type ImportedVideoQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type ImportedVideoQuery = { __typename?: 'Query', node?: { __typename?: 'AccountConnection' } | { __typename?: 'AnatomicalModel' } | { __typename?: 'ApiQueryLog' } | { __typename?: 'ApiToken' } | { __typename?: 'Article' } | { __typename?: 'ArticleFeed' } | { __typename?: 'Audience' } | { __typename?: 'AuditLog' } | { __typename?: 'Bookmark' } | { __typename?: 'Certificate' } | { __typename?: 'CertificateSurveyAnswer' } | { __typename?: 'CertificateSurveyQuestion' } | { __typename?: 'CertificateSurveyQuestionChoice' } | { __typename?: 'ClinicalTrial' } | { __typename?: 'ClinicalTrialDocument' } | { __typename?: 'ClinicalTrialEmbedding' } | { __typename?: 'CloudflareUpload' } | { __typename?: 'Collection' } | { __typename?: 'Comment' } | { __typename?: 'CommentLike' } | { __typename?: 'CommentNamedEntity' } | { __typename?: 'Course' } | { __typename?: 'Dashboard' } | { __typename?: 'EducationCredit' } | { __typename?: 'EducationHistory' } | { __typename?: 'FaceDetectRequest' } | { __typename?: 'FinancialDisclosure' } | { __typename?: 'FinancialDisclosurePrintTemplate' } | { __typename?: 'FinancialDisclosureRole' } | { __typename?: 'FinancialDisclosureStatement' } | { __typename?: 'GiblibVideo' } | { __typename?: 'GoogleDriveFile' } | { __typename?: 'GptLog' } | { __typename?: 'HumanOntologyNode' } | { __typename?: 'Image' } | { __typename?: 'ImportedVideo', id: string, bucket?: string | null, storageKey?: string | null, title?: string | null, body?: string | null, exportStatus?: ImportedVideoExportStatus | null, accountConnectionID: string, exportedVideo?: { __typename?: 'Video', id: string, post?: { __typename?: 'Post', id: string } | null } | null } | { __typename?: 'InsightRequest' } | { __typename?: 'InstagramScrapeLog' } | { __typename?: 'JobHistory' } | { __typename?: 'LanguageModelResponse' } | { __typename?: 'LearningObjective' } | { __typename?: 'LicenseHistory' } | { __typename?: 'Like' } | { __typename?: 'MediaItem' } | { __typename?: 'MedicalHealthTerm' } | { __typename?: 'MedicalSubjectHeading' } | { __typename?: 'Notification' } | { __typename?: 'NotificationConfig' } | { __typename?: 'NpiTaxonomy' } | { __typename?: 'Office' } | { __typename?: 'PhoneVerificationToken' } | { __typename?: 'Poll' } | { __typename?: 'PollAnswer' } | { __typename?: 'PollQuestion' } | { __typename?: 'Post' } | { __typename?: 'PostCitation' } | { __typename?: 'PostCollection' } | { __typename?: 'PostEmbedding' } | { __typename?: 'PostLearningObjective' } | { __typename?: 'PostReaction' } | { __typename?: 'PostReport' } | { __typename?: 'Provider' } | { __typename?: 'PubmedAbstractEmbedding' } | { __typename?: 'PubmedArticle' } | { __typename?: 'PubmedArticleAbstract' } | { __typename?: 'PubmedArticleEmbedding' } | { __typename?: 'PubmedCentralArticle' } | { __typename?: 'PubmedDownloadLog' } | { __typename?: 'PubmedTopicCluster' } | { __typename?: 'ReflectionAnalysis' } | { __typename?: 'ReflectionAnalysisResult' } | { __typename?: 'ReflectionAnalysisScore' } | { __typename?: 'ReflectionCriteria' } | { __typename?: 'ReportReason' } | { __typename?: 'Search' } | { __typename?: 'SearchConversion' } | { __typename?: 'SparkyChat' } | { __typename?: 'SparkyChatConfig' } | { __typename?: 'SparkyChatMessage' } | { __typename?: 'SparkyConversation' } | { __typename?: 'SparkyConversationConfigSet' } | { __typename?: 'SparkyMessage' } | { __typename?: 'SparkyPrompt' } | { __typename?: 'SparkyQuery' } | { __typename?: 'SparkyRule' } | { __typename?: 'SparkyRuleCondition' } | { __typename?: 'SparkyRuleField' } | { __typename?: 'Tag' } | { __typename?: 'Tenant' } | { __typename?: 'Topic' } | { __typename?: 'TopicClassification' } | { __typename?: 'TopicCluster' } | { __typename?: 'TopicNpiTaxonomy' } | { __typename?: 'TopicPubmedTopicCluster' } | { __typename?: 'TranscriptionRequest' } | { __typename?: 'Upload' } | { __typename?: 'User' } | { __typename?: 'UserAnalyticsEvent' } | { __typename?: 'UserBlock' } | { __typename?: 'UserCollectionCompletion' } | { __typename?: 'UserLink' } | { __typename?: 'UserMute' } | { __typename?: 'UserNotificationToken' } | { __typename?: 'UserReport' } | { __typename?: 'UserTenant' } | { __typename?: 'UserVideoEvent' } | { __typename?: 'VerificationRequest' } | { __typename?: 'Video' } | { __typename?: 'VideoFrame' } | { __typename?: 'VideoPipeline' } | { __typename?: 'WorkExperience' } | null };
+export type ImportedVideoQuery = { __typename?: 'Query', node?: { __typename?: 'AccountConnection' } | { __typename?: 'AnatomicalModel' } | { __typename?: 'ApiQueryLog' } | { __typename?: 'ApiToken' } | { __typename?: 'Article' } | { __typename?: 'ArticleFeed' } | { __typename?: 'Audience' } | { __typename?: 'AuditLog' } | { __typename?: 'Bookmark' } | { __typename?: 'Certificate' } | { __typename?: 'CertificateSurveyAnswer' } | { __typename?: 'CertificateSurveyQuestion' } | { __typename?: 'CertificateSurveyQuestionChoice' } | { __typename?: 'ClinicalTrial' } | { __typename?: 'ClinicalTrialDocument' } | { __typename?: 'ClinicalTrialEmbedding' } | { __typename?: 'CloudflareUpload' } | { __typename?: 'Collection' } | { __typename?: 'Comment' } | { __typename?: 'CommentLike' } | { __typename?: 'CommentNamedEntity' } | { __typename?: 'Course' } | { __typename?: 'Dashboard' } | { __typename?: 'EducationCredit' } | { __typename?: 'EducationHistory' } | { __typename?: 'FaceDetectRequest' } | { __typename?: 'FinancialDisclosure' } | { __typename?: 'FinancialDisclosurePrintTemplate' } | { __typename?: 'FinancialDisclosureRole' } | { __typename?: 'FinancialDisclosureStatement' } | { __typename?: 'GiblibVideo' } | { __typename?: 'GoogleDriveFile' } | { __typename?: 'GptLog' } | { __typename?: 'HumanOntologyNode' } | { __typename?: 'Image' } | { __typename?: 'ImportedVideo', id: string, bucket?: string | null, storageKey?: string | null, title?: string | null, body?: string | null, exportStatus?: ImportedVideoExportStatus | null, accountConnectionID: string, exportedVideo?: { __typename?: 'Video', id: string, post?: { __typename?: 'Post', id: string } | null } | null } | { __typename?: 'InsightRequest' } | { __typename?: 'InstagramScrapeLog' } | { __typename?: 'JobHistory' } | { __typename?: 'LanguageModelResponse' } | { __typename?: 'LearningObjective' } | { __typename?: 'LicenseHistory' } | { __typename?: 'Like' } | { __typename?: 'MediaItem' } | { __typename?: 'MedicalHealthTerm' } | { __typename?: 'MedicalSubjectHeading' } | { __typename?: 'Notification' } | { __typename?: 'NotificationConfig' } | { __typename?: 'NpiTaxonomy' } | { __typename?: 'Office' } | { __typename?: 'PhoneVerificationToken' } | { __typename?: 'Poll' } | { __typename?: 'PollAnswer' } | { __typename?: 'PollQuestion' } | { __typename?: 'Post' } | { __typename?: 'PostCitation' } | { __typename?: 'PostCollection' } | { __typename?: 'PostEmbedding' } | { __typename?: 'PostLearningObjective' } | { __typename?: 'PostReaction' } | { __typename?: 'PostReport' } | { __typename?: 'Provider' } | { __typename?: 'PubmedAbstractEmbedding' } | { __typename?: 'PubmedArticle' } | { __typename?: 'PubmedArticleAbstract' } | { __typename?: 'PubmedArticleEmbedding' } | { __typename?: 'PubmedCentralArticle' } | { __typename?: 'PubmedDownloadLog' } | { __typename?: 'PubmedTopicCluster' } | { __typename?: 'ReflectionAnalysis' } | { __typename?: 'ReflectionAnalysisResult' } | { __typename?: 'ReflectionAnalysisScore' } | { __typename?: 'ReflectionCriteria' } | { __typename?: 'ReportReason' } | { __typename?: 'Search' } | { __typename?: 'SearchConversion' } | { __typename?: 'SparkyChat' } | { __typename?: 'SparkyChatConfig' } | { __typename?: 'SparkyChatMessage' } | { __typename?: 'SparkyConversation' } | { __typename?: 'SparkyConversationConfigSet' } | { __typename?: 'SparkyMessage' } | { __typename?: 'SparkyPrompt' } | { __typename?: 'SparkyQuery' } | { __typename?: 'SparkyRule' } | { __typename?: 'SparkyRuleCondition' } | { __typename?: 'SparkyRuleField' } | { __typename?: 'Tag' } | { __typename?: 'Tenant' } | { __typename?: 'Topic' } | { __typename?: 'TopicClassification' } | { __typename?: 'TopicCluster' } | { __typename?: 'TopicNpiTaxonomy' } | { __typename?: 'TopicPubmedTopicCluster' } | { __typename?: 'TranscriptionRequest' } | { __typename?: 'Upload' } | { __typename?: 'User' } | { __typename?: 'UserAnalyticsEvent' } | { __typename?: 'UserBlock' } | { __typename?: 'UserCollectionCompletion' } | { __typename?: 'UserLink' } | { __typename?: 'UserMute' } | { __typename?: 'UserNotificationToken' } | { __typename?: 'UserReport' } | { __typename?: 'UserTenant' } | { __typename?: 'UserVideoEvent' } | { __typename?: 'VerificationRequest' } | { __typename?: 'Video' } | { __typename?: 'VideoFrame' } | { __typename?: 'VideoPipeline' } | { __typename?: 'WaitlistEntry' } | { __typename?: 'WorkExperience' } | null };
 
 export type AccountConnectionQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type AccountConnectionQuery = { __typename?: 'Query', node?: { __typename?: 'AccountConnection', id: string, type: AccountConnectionType, username?: string | null, connectionStatus: AccountConnectionConnectionStatus, updatedAt: any, importStatus: AccountConnectionImportStatus, exportStatus: AccountConnectionExportStatus, profilePictureURL?: string | null } | { __typename?: 'AnatomicalModel' } | { __typename?: 'ApiQueryLog' } | { __typename?: 'ApiToken' } | { __typename?: 'Article' } | { __typename?: 'ArticleFeed' } | { __typename?: 'Audience' } | { __typename?: 'AuditLog' } | { __typename?: 'Bookmark' } | { __typename?: 'Certificate' } | { __typename?: 'CertificateSurveyAnswer' } | { __typename?: 'CertificateSurveyQuestion' } | { __typename?: 'CertificateSurveyQuestionChoice' } | { __typename?: 'ClinicalTrial' } | { __typename?: 'ClinicalTrialDocument' } | { __typename?: 'ClinicalTrialEmbedding' } | { __typename?: 'CloudflareUpload' } | { __typename?: 'Collection' } | { __typename?: 'Comment' } | { __typename?: 'CommentLike' } | { __typename?: 'CommentNamedEntity' } | { __typename?: 'Course' } | { __typename?: 'Dashboard' } | { __typename?: 'EducationCredit' } | { __typename?: 'EducationHistory' } | { __typename?: 'FaceDetectRequest' } | { __typename?: 'FinancialDisclosure' } | { __typename?: 'FinancialDisclosurePrintTemplate' } | { __typename?: 'FinancialDisclosureRole' } | { __typename?: 'FinancialDisclosureStatement' } | { __typename?: 'GiblibVideo' } | { __typename?: 'GoogleDriveFile' } | { __typename?: 'GptLog' } | { __typename?: 'HumanOntologyNode' } | { __typename?: 'Image' } | { __typename?: 'ImportedVideo' } | { __typename?: 'InsightRequest' } | { __typename?: 'InstagramScrapeLog' } | { __typename?: 'JobHistory' } | { __typename?: 'LanguageModelResponse' } | { __typename?: 'LearningObjective' } | { __typename?: 'LicenseHistory' } | { __typename?: 'Like' } | { __typename?: 'MediaItem' } | { __typename?: 'MedicalHealthTerm' } | { __typename?: 'MedicalSubjectHeading' } | { __typename?: 'Notification' } | { __typename?: 'NotificationConfig' } | { __typename?: 'NpiTaxonomy' } | { __typename?: 'Office' } | { __typename?: 'PhoneVerificationToken' } | { __typename?: 'Poll' } | { __typename?: 'PollAnswer' } | { __typename?: 'PollQuestion' } | { __typename?: 'Post' } | { __typename?: 'PostCitation' } | { __typename?: 'PostCollection' } | { __typename?: 'PostEmbedding' } | { __typename?: 'PostLearningObjective' } | { __typename?: 'PostReaction' } | { __typename?: 'PostReport' } | { __typename?: 'Provider' } | { __typename?: 'PubmedAbstractEmbedding' } | { __typename?: 'PubmedArticle' } | { __typename?: 'PubmedArticleAbstract' } | { __typename?: 'PubmedArticleEmbedding' } | { __typename?: 'PubmedCentralArticle' } | { __typename?: 'PubmedDownloadLog' } | { __typename?: 'PubmedTopicCluster' } | { __typename?: 'ReflectionAnalysis' } | { __typename?: 'ReflectionAnalysisResult' } | { __typename?: 'ReflectionAnalysisScore' } | { __typename?: 'ReflectionCriteria' } | { __typename?: 'ReportReason' } | { __typename?: 'Search' } | { __typename?: 'SearchConversion' } | { __typename?: 'SparkyChat' } | { __typename?: 'SparkyChatConfig' } | { __typename?: 'SparkyChatMessage' } | { __typename?: 'SparkyConversation' } | { __typename?: 'SparkyConversationConfigSet' } | { __typename?: 'SparkyMessage' } | { __typename?: 'SparkyPrompt' } | { __typename?: 'SparkyQuery' } | { __typename?: 'SparkyRule' } | { __typename?: 'SparkyRuleCondition' } | { __typename?: 'SparkyRuleField' } | { __typename?: 'Tag' } | { __typename?: 'Tenant' } | { __typename?: 'Topic' } | { __typename?: 'TopicClassification' } | { __typename?: 'TopicCluster' } | { __typename?: 'TopicNpiTaxonomy' } | { __typename?: 'TopicPubmedTopicCluster' } | { __typename?: 'TranscriptionRequest' } | { __typename?: 'Upload' } | { __typename?: 'User' } | { __typename?: 'UserAnalyticsEvent' } | { __typename?: 'UserBlock' } | { __typename?: 'UserCollectionCompletion' } | { __typename?: 'UserLink' } | { __typename?: 'UserMute' } | { __typename?: 'UserNotificationToken' } | { __typename?: 'UserReport' } | { __typename?: 'UserTenant' } | { __typename?: 'UserVideoEvent' } | { __typename?: 'VerificationRequest' } | { __typename?: 'Video' } | { __typename?: 'VideoFrame' } | { __typename?: 'VideoPipeline' } | { __typename?: 'WorkExperience' } | null };
+export type AccountConnectionQuery = { __typename?: 'Query', node?: { __typename?: 'AccountConnection', id: string, type: AccountConnectionType, username?: string | null, connectionStatus: AccountConnectionConnectionStatus, updatedAt: any, importStatus: AccountConnectionImportStatus, exportStatus: AccountConnectionExportStatus, profilePictureURL?: string | null, totalPublished: number, totalIgnored: number } | { __typename?: 'AnatomicalModel' } | { __typename?: 'ApiQueryLog' } | { __typename?: 'ApiToken' } | { __typename?: 'Article' } | { __typename?: 'ArticleFeed' } | { __typename?: 'Audience' } | { __typename?: 'AuditLog' } | { __typename?: 'Bookmark' } | { __typename?: 'Certificate' } | { __typename?: 'CertificateSurveyAnswer' } | { __typename?: 'CertificateSurveyQuestion' } | { __typename?: 'CertificateSurveyQuestionChoice' } | { __typename?: 'ClinicalTrial' } | { __typename?: 'ClinicalTrialDocument' } | { __typename?: 'ClinicalTrialEmbedding' } | { __typename?: 'CloudflareUpload' } | { __typename?: 'Collection' } | { __typename?: 'Comment' } | { __typename?: 'CommentLike' } | { __typename?: 'CommentNamedEntity' } | { __typename?: 'Course' } | { __typename?: 'Dashboard' } | { __typename?: 'EducationCredit' } | { __typename?: 'EducationHistory' } | { __typename?: 'FaceDetectRequest' } | { __typename?: 'FinancialDisclosure' } | { __typename?: 'FinancialDisclosurePrintTemplate' } | { __typename?: 'FinancialDisclosureRole' } | { __typename?: 'FinancialDisclosureStatement' } | { __typename?: 'GiblibVideo' } | { __typename?: 'GoogleDriveFile' } | { __typename?: 'GptLog' } | { __typename?: 'HumanOntologyNode' } | { __typename?: 'Image' } | { __typename?: 'ImportedVideo' } | { __typename?: 'InsightRequest' } | { __typename?: 'InstagramScrapeLog' } | { __typename?: 'JobHistory' } | { __typename?: 'LanguageModelResponse' } | { __typename?: 'LearningObjective' } | { __typename?: 'LicenseHistory' } | { __typename?: 'Like' } | { __typename?: 'MediaItem' } | { __typename?: 'MedicalHealthTerm' } | { __typename?: 'MedicalSubjectHeading' } | { __typename?: 'Notification' } | { __typename?: 'NotificationConfig' } | { __typename?: 'NpiTaxonomy' } | { __typename?: 'Office' } | { __typename?: 'PhoneVerificationToken' } | { __typename?: 'Poll' } | { __typename?: 'PollAnswer' } | { __typename?: 'PollQuestion' } | { __typename?: 'Post' } | { __typename?: 'PostCitation' } | { __typename?: 'PostCollection' } | { __typename?: 'PostEmbedding' } | { __typename?: 'PostLearningObjective' } | { __typename?: 'PostReaction' } | { __typename?: 'PostReport' } | { __typename?: 'Provider' } | { __typename?: 'PubmedAbstractEmbedding' } | { __typename?: 'PubmedArticle' } | { __typename?: 'PubmedArticleAbstract' } | { __typename?: 'PubmedArticleEmbedding' } | { __typename?: 'PubmedCentralArticle' } | { __typename?: 'PubmedDownloadLog' } | { __typename?: 'PubmedTopicCluster' } | { __typename?: 'ReflectionAnalysis' } | { __typename?: 'ReflectionAnalysisResult' } | { __typename?: 'ReflectionAnalysisScore' } | { __typename?: 'ReflectionCriteria' } | { __typename?: 'ReportReason' } | { __typename?: 'Search' } | { __typename?: 'SearchConversion' } | { __typename?: 'SparkyChat' } | { __typename?: 'SparkyChatConfig' } | { __typename?: 'SparkyChatMessage' } | { __typename?: 'SparkyConversation' } | { __typename?: 'SparkyConversationConfigSet' } | { __typename?: 'SparkyMessage' } | { __typename?: 'SparkyPrompt' } | { __typename?: 'SparkyQuery' } | { __typename?: 'SparkyRule' } | { __typename?: 'SparkyRuleCondition' } | { __typename?: 'SparkyRuleField' } | { __typename?: 'Tag' } | { __typename?: 'Tenant' } | { __typename?: 'Topic' } | { __typename?: 'TopicClassification' } | { __typename?: 'TopicCluster' } | { __typename?: 'TopicNpiTaxonomy' } | { __typename?: 'TopicPubmedTopicCluster' } | { __typename?: 'TranscriptionRequest' } | { __typename?: 'Upload' } | { __typename?: 'User' } | { __typename?: 'UserAnalyticsEvent' } | { __typename?: 'UserBlock' } | { __typename?: 'UserCollectionCompletion' } | { __typename?: 'UserLink' } | { __typename?: 'UserMute' } | { __typename?: 'UserNotificationToken' } | { __typename?: 'UserReport' } | { __typename?: 'UserTenant' } | { __typename?: 'UserVideoEvent' } | { __typename?: 'VerificationRequest' } | { __typename?: 'Video' } | { __typename?: 'VideoFrame' } | { __typename?: 'VideoPipeline' } | { __typename?: 'WaitlistEntry' } | { __typename?: 'WorkExperience' } | null };
 
 export type CreatePostFromImportedVideoMutationVariables = Exact<{
   videoID: Scalars['String']['input'];
@@ -20749,6 +21129,14 @@ export type CreatePostsFromConnectionMutationVariables = Exact<{
 
 
 export type CreatePostsFromConnectionMutation = { __typename?: 'Mutation', createPostsFromConnection?: string | null };
+
+export type IgnoreVideosMutationVariables = Exact<{
+  accountConnectionID: Scalars['Int']['input'];
+  videoIDs: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type IgnoreVideosMutation = { __typename?: 'Mutation', toggleIgnoreImportedVideos?: boolean | null };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -20892,6 +21280,8 @@ export const AccountConnectionsDocument = new TypedDocumentString(`
         exportStatus
         importStatus
         profilePictureURL
+        totalPublished
+        totalIgnored
       }
     }
   }
@@ -20930,6 +21320,8 @@ export const AccountConnectionDocument = new TypedDocumentString(`
       importStatus
       exportStatus
       profilePictureURL
+      totalPublished
+      totalIgnored
     }
   }
 }
@@ -20975,3 +21367,11 @@ export const CreatePostsFromConnectionDocument = new TypedDocumentString(`
   createPostsFromConnection(id: $id)
 }
     `) as unknown as TypedDocumentString<CreatePostsFromConnectionMutation, CreatePostsFromConnectionMutationVariables>;
+export const IgnoreVideosDocument = new TypedDocumentString(`
+    mutation IgnoreVideos($accountConnectionID: Int!, $videoIDs: [String!]!) {
+  toggleIgnoreImportedVideos(
+    accountConnectionID: $accountConnectionID
+    videoIDs: $videoIDs
+  )
+}
+    `) as unknown as TypedDocumentString<IgnoreVideosMutation, IgnoreVideosMutationVariables>;
