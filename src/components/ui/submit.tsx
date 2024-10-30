@@ -15,8 +15,10 @@ const Submit = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 ref={ref}
                 {...props}
             >
-                {pending && <Loader2 className="animate-spin" />}
-                {props.children}
+                <div className="flex items-center justify-center gap-x-4">
+                    {pending && <div><Loader2 className="animate-spin" /></div>}
+                    <div>{props.children}</div>
+                </div>
             </Comp>
         )
     }
